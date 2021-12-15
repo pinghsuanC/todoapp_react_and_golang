@@ -4,6 +4,13 @@
 - Goal is to get familiar with golang syntax and its code structure; later I'd like to use golang for personal website.
 - The backend will be "overly-complicated" and focus on extensibility
 
+# TODO：
+
+- goLang: read http and httptest package
+- connect react and go backend
+- transfer data from go to react
+- rightnow don't need to use server, local memory is fine
+
 # Setting up backend with go:
 
 1. command: `go mod init github.com/pinghsuanC/todoapp_react_and_golang/backend`
@@ -23,10 +30,3 @@
      - http package
      - http testing package
    - need to checkout golang errors
-
-# TODO：
-
-- goLang: read http and httptest package
-- connect react and go backend
-- transfer data from go to react
-- rightnow don't need to use server, local memory is fine
