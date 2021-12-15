@@ -16,3 +16,9 @@
    - access the types by entites.'type' (e.g. entities.Todo)
 3. other notes
    - in Go, errors are plain values. There is no throw/catch types of things in Java
+   - note useful packages:
+     - reflect
+     - testing
+     - http package
+     - http testing package
+   - need to checkout golang errors
