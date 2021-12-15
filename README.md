@@ -15,6 +15,7 @@
    - `entities`: store the types; public fields have to be capitalized, else they won't be exported
    - access the types by entites.'type' (e.g. entities.Todo)
 3. other notes
+
    - in Go, errors are plain values. There is no throw/catch types of things in Java
    - note useful packages:
      - reflect
@@ -22,3 +23,10 @@
      - http package
      - http testing package
    - need to checkout golang errors
+
+# TODO：
+
+- goLang: read http and httptest package
+- connect react and go backend
+- transfer data from go to react
+- rightnow don't need to use server, local memory is fine
