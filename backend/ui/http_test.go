@@ -12,6 +12,14 @@ import (
 	"github.com/pinghsuanC/todoapp_react_and_golang/backend/ui"
 )
 
+
+func TestHTTP(t *testing.T){
+	tests := getTest();
+	tests = append(tests, getDisallowedMthodTests()...);
+	testHTTP(tests, t)
+	
+}
+
 type MockService struct {
 	err   error
 	todos []entities.Todo
@@ -26,6 +34,7 @@ type HTTPTest struct{
 	expectedStatus int
 	expectedTodos []entities.Todo
 }
+
 var dummyTodos = []entities.Todo{
 	{Title: "todo 1", Description: "descriotion 1", IsCompleted: false},
 	{Title: "todo 2", Description: "descriotion 2", IsCompleted: true},
@@ -40,10 +49,34 @@ func (s MockService) GetAllTodos()([]entities.Todo, error){
 }
 
 
-func TestHTTP(t *testing.T){
 
+func testHTTP(tests []HTTPTest, t *testing.T)  {
+	for _, test := range tests{
+		t.Run(test.name, func(t *testing.T){
+			service := &MockService{err: fmt.Errorf("something bad happened")}
 
-	tests := []HTTPTest{
+			w := httptest.NewRecorder()
+			r := httptest.NewRequest(test.inputMethod, test.inputURL, nil)
+
+			server := ui.NewHTTP();
+			server.UseService(service)
+			server.ServeHTTP(w, r)
+			
+			var body []entities.Todo
+			json.NewDecoder(w.Result().Body).Decode(&body)
+
+			if(w.Result().StatusCode!=test.expectedStatus){
+				t.Fatalf("Expected status to be %v, got: %v", test.expectedStatus, w.Result().StatusCode)
+			}
+			if(!reflect.DeepEqual(body, test.expectedTodos)){
+				t.Fatalf("Expected todos to be an %v, got: %v", test.expectedTodos, body)
+			}
+		})
+	}
+}
+
+func getTest() []HTTPTest {
+	return []HTTPTest{
 		{
 			name: "Random error gives 500 status and no todos",
 			service: &MockService{err:fmt.Errorf("something bad happened")}, 
@@ -93,34 +126,9 @@ func TestHTTP(t *testing.T){
 			expectedTodos: nil,
 		},
 	}
-
-	tests = append(tests, getDisallowedMthodTests()...);
-
-	for _, test := range tests{
-		t.Run(test.name, func(t *testing.T){
-			service := &MockService{err: fmt.Errorf("something bad happened")}
-
-			w := httptest.NewRecorder()
-			r := httptest.NewRequest(test.inputMethod, test.inputURL, nil)
-
-			server := ui.NewHTTP();
-			server.UseService(service)
-			server.ServeHTTP(w, r)
-			
-			var body []entities.Todo
-			json.NewDecoder(w.Result().Body).Decode(&body)
-
-			if(w.Result().StatusCode!=test.expectedStatus){
-				t.Fatalf("Expected status to be %v, got: %v", test.expectedStatus, w.Result().StatusCode)
-			}
-			if(!reflect.DeepEqual(body, test.expectedTodos)){
-				t.Fatalf("Expected todos to be an %v, got: %v", test.expectedTodos, body)
-			}
-		})
-	}
 }
 
-func getDisallowedMthodTests()[]HTTPTest {
+func getDisallowedMthodTests() []HTTPTest {
 	
 	disAllowedMthods := []string{
 		http.MethodDelete,

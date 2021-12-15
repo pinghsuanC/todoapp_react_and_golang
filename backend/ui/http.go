@@ -18,13 +18,10 @@ func (server *HTTPServer) UseService(s Service) {
 }
 
 func (server HTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request){
-	if(r.URL.Path != "/todos/" && r.URL.Path != "/todos"){
-		w.WriteHeader(http.StatusNotFound)
-		return;
-	}
-	if(r.Method != http.MethodGet){
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return;
+	verified := verifyRequest(w, r)
+
+	if(!verified){
+		return
 	}
 
 	todos, err := server.service.GetAllTodos()
@@ -34,4 +31,16 @@ func (server HTTPServer) ServeHTTP(w http.ResponseWriter, r *http.Request){
 	}
 	
 	json.NewEncoder(w).Encode(todos)
+}
+
+func verifyRequest(w http.ResponseWriter, r *http.Request) bool {
+	if(r.URL.Path != "/todos/" && r.URL.Path != "/todos"){
+		w.WriteHeader(http.StatusNotFound)
+		return false;
+	}
+	if(r.Method != http.MethodGet){
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return false;
+	}
+	return true;
 }
